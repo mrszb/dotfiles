@@ -1,0 +1,2 @@
+# with chezmoi now
+export SUDO_EDITOR="code --wait"
