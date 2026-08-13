@@ -1,0 +1,42 @@
+# ~/.bashrc.d/10-aliases — general aliases (managed by chezmoi)
+
+# Human readable figures by default
+alias df='df -h'
+alias du='du -h'
+
+# ls family
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Search command line history
+alias h='history | grep '
+
+# git
+alias gl='git log --all --graph --decorate --oneline --simplify-by-decoration'
+
+# To see if a command is aliased, a file, or a built-in command
+alias checkcommand='type -t'
+
+# SHA1
+alias sha1='openssl sha1'
+
+# Disk usage
+alias diskspace='du -S | sort -n -r | more'
+alias folders='du -h --max-depth=1'
+alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
+alias mountedinfo='df -hT'
+
+# tree (requires: dnf install tree)
+alias tree='tree -CAhF --dirsfirst'
+alias treed='tree -CAFd'
+
+# Show open ports / connections (ss replaces deprecated netstat)
+alias openports='ss -tulnap'
+alias ipview="ss -tnp state established '( sport = :80 or sport = :443 )' | awk 'NR>1 {print \$4}' | cut -d: -f1 | sort | uniq -c | sort -n"
+
+# Tail all text logs in /var/log
+alias logs="sudo find /var/log -type f -exec file {} \; | grep 'text' | cut -d' ' -f1 | sed -e's/:\$//g' | grep -v '[0-9]\$' | xargs tail -f"
+
+# Count all files (recursively) in the current folder
+alias countfiles="for t in files links directories; do echo \$(find . -type \${t:0:1} | wc -l) \$t; done 2> /dev/null"

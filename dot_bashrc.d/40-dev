@@ -1,0 +1,23 @@
+# ~/.bashrc.d/40-dev — dev tooling (managed by chezmoi)
+
+# uv: pin to system python3 (comment out to let uv manage its own pythons)
+export UV_PYTHON=$(command -v python3)
+
+# conan from its dedicated venv
+alias conan='~/.venvs/conan/bin/conan'
+
+# cmake variants — only define the ones that exist on this box
+[ -x /snap/bin/cmake ]      && alias cmake-snap='/snap/bin/cmake'
+[ -x /usr/bin/cmake ]       && alias cmake-apt='/usr/bin/cmake'
+[ -x /usr/local/bin/cmake ] && alias cmake-local='/usr/local/bin/cmake'
+
+# m68k cross-toolchain paths (opt-in, call when needed)
+path_m68k ()
+{
+	export PATH="$HOME/x-tools/m68k-elf/bin:$PATH"
+}
+
+path_ct ()
+{
+	export PATH="$HOME/projects/m68k-toolchain/.crosstool/bin:$PATH"
+}

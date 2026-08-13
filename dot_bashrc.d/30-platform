@@ -1,0 +1,28 @@
+# ~/.bashrc.d/30-platform — WSL vs native detection (managed by chezmoi)
+# Runtime check: same file works on Fedora, Ubuntu, WSL, Pi.
+
+if [[ "$(< /proc/sys/kernel/osrelease)" == *icrosoft* ]]; then
+	export IS_WSL=1
+	VERACRYPT=$(wslpath 'C:\Program Files\VeraCrypt\VeraCrypt.exe')
+	BCOMP=$(wslpath 'C:\Program Files\Beyond Compare 5\bcomp.exe')
+
+	# Beyond Compare diff with Windows path translation
+	diffui ()
+	{
+		"$BCOMP" "$(wslpath -aw "$1")" "$(wslpath -aw "$2")"
+	}
+else
+	VERACRYPT=veracrypt
+	BCOMP=bcomp
+
+	diffui ()
+	{
+		"$BCOMP" "$1" "$2"
+	}
+fi
+
+# NOTE: quotes must NOT be backslash-escaped here — the original
+#   alias vc=\"${VERACRYPT}\"
+# baked literal quote characters into the alias and broke it.
+alias vc="$VERACRYPT"
+alias bcompare="$BCOMP"
