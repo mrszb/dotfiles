@@ -98,7 +98,7 @@
 	path = C:/Program Files/Beyond Compare 5/BComp.exe
 	trustExitCode = true
 
-{{ else if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{ else if (get .chezmoi.kernel "osrelease" | toString | lower | contains "microsoft") -}}
 # ---- WSL: Windows-side GUI tools reached through wslpath ----
 [diff]
 	tool = p4merge

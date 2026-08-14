@@ -11,8 +11,8 @@
 Documents
 {{ end -}}
 
-{{ if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
-# WSL-only module: harmless elsewhere (it self-guards on IS_WSL), but
-# there is no reason to write it on Fedora or the Pis.
+{{ if ne .chezmoi.os "windows" -}}
+{{   if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
 .bashrc.d/60-wsl
+{{   end -}}
 {{ end -}}
