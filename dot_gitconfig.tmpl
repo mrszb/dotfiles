@@ -1,0 +1,104 @@
+# ~/.gitconfig — managed by chezmoi (template)
+[user]
+	name = Marian Szabo
+	email = mrszb@yahoo.com
+
+[alias]
+	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+	# fixed: was quoted as 'reset HEAD --' which made git run the literal string
+	unstage = reset HEAD --
+	co = checkout
+	ci = commit
+	st = status
+	br = branch
+	type = cat-file -t
+	dump = cat-file -p
+	dt = difftool
+	mt = mergetool
+	last = log -1 HEAD --stat
+	visual = !gitk --all&
+	diffdir = difftool --dir-diff --no-symlinks
+	diffbc = difftool --tool=BCompare
+	diffp4 = difftool --tool=p4merge
+
+[color]
+	status = auto
+
+[color "status"]
+	added = green
+	untracked = magenta
+	deleted = red
+	changed = cyan normal bold
+
+[color "diff"]
+	old = red normal bold
+	new = green normal bold
+
+[difftool]
+	prompt = false
+	keepTemporaries = false
+	trustExitCode = false
+	keepBackup = false
+
+{{ if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+# ---- WSL: Windows-side GUI tools via wslpath ----
+[diff]
+	tool = p4merge
+
+[merge]
+	tool = p4merge
+
+[difftool "p4merge"]
+	cmd = /mnt/c/Program\\ Files/Perforce/p4merge.exe "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)"
+
+[mergetool "p4merge"]
+	cmd = /mnt/c/Program\\ Files/Perforce/p4merge.exe "$(wslpath -aw $BASE)" "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)" "$(wslpath -aw $MERGED)"
+	trustExitCode = false
+
+[difftool "BCompare"]
+	cmd = /mnt/c/Program\\ Files/Beyond\\ Compare\\ 5/bcomp.exe "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)"
+
+[mergetool "BCompare"]
+	cmd = /mnt/c/Program\\ Files/Beyond\\ Compare\\ 5/bcomp.exe "$(wslpath -aw $BASE)" "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)" "$(wslpath -aw $MERGED)"
+
+[safe]
+	directory = %(prefix)///wsl.localhost/WLinux/home/maros/proj-wsl/scanfiles
+{{ else -}}
+# ---- Native Linux: bcomp if installed (BCompare tool name works natively) ----
+[diff]
+	tool = BCompare
+
+[merge]
+	tool = BCompare
+
+[difftool "BCompare"]
+	cmd = bcomp "$LOCAL" "$REMOTE"
+
+[mergetool "BCompare"]
+	cmd = bcomp "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+{{ end -}}
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[core]
+	editor = code --wait
+	autocrlf = false
+
+[pull]
+	rebase = false
+
+[fetch]
+	prune = false
+
+[rebase]
+	autoStash = false
+
+[init]
+	defaultBranch = main
+
+[credential]
+	helper = store

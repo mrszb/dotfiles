@@ -1,0 +1,31 @@
+# ~/.bashrc.d/70-prompt — prompt (managed by chezmoi)
+
+# 1) Oh My Posh, if installed (WSL)
+if command -v oh-my-posh >/dev/null 2>&1; then
+	_omp=$(command -v oh-my-posh)
+elif [ -x "$HOME/bin/oh-my-posh" ]; then
+	_omp="$HOME/bin/oh-my-posh"
+else
+	_omp=""
+fi
+
+if [ -n "$_omp" ]; then
+	_omp_cfg=""
+	if [ -f "$HOME/.config/omp/cobalt2.omp.json" ]; then
+		_omp_cfg="$HOME/.config/omp/cobalt2.omp.json"
+	elif [ "$IS_WSL" = 1 ] && [ -f /mnt/c/Users/mszab/cobalt2.omp.json ]; then
+		_omp_cfg=/mnt/c/Users/mszab/cobalt2.omp.json
+	fi
+	if [ -n "$_omp_cfg" ]; then
+		eval "$("$_omp" init bash --config "$_omp_cfg")"
+	else
+		eval "$("$_omp" init bash)"
+	fi
+
+# 2) bash-git-prompt, if installed (Fedora)
+elif [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then
+	GIT_PROMPT_ONLY_IN_REPO=1
+	. "$HOME/.bash-git-prompt/gitprompt.sh"
+fi
+unset _omp _omp_cfg
+

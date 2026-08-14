@@ -11,13 +11,39 @@ alias conan='~/.venvs/conan/bin/conan'
 [ -x /usr/bin/cmake ]       && alias cmake-apt='/usr/bin/cmake'
 [ -x /usr/local/bin/cmake ] && alias cmake-local='/usr/local/bin/cmake'
 
-# m68k cross-toolchain paths (opt-in, call when needed)
-path_m68k ()
-{
-	export PATH="$HOME/x-tools/m68k-elf/bin:$PATH"
-}
+# Cross toolchains: prepend every ~/x-tools/*/bin that exists
+# (arm-none-eabi, avr-gcc, m68k-elf, whatever lands there next)
+for d in "$HOME"/x-tools/*/bin; do
+	[ -d "$d" ] || continue                 # glob didn't match anything
+	case ":$PATH:" in
+		*":$d:"*) ;;                        # already present (nested shell)
+		*) PATH="$d:$PATH" ;;
+	esac
+done
+unset d
 
+# JetBrains Toolbox scripts — append, just convenience launchers
+d="$HOME/.local/share/JetBrains/Toolbox/scripts"
+case ":$PATH:" in
+	*":$d:"*) ;;
+	*) [ -d "$d" ] && PATH="$PATH:$d" ;;
+esac
+unset d
+
+export PATH
+
+# crosstool-NG build output (outside x-tools, still opt-in)
 path_ct ()
 {
 	export PATH="$HOME/projects/m68k-toolchain/.crosstool/bin:$PATH"
 }
+
+
+# CUDA toolkit
+if [ -d /usr/local/cuda/bin ]; then
+	case ":$PATH:" in
+		*":/usr/local/cuda/bin:"*) ;;
+		*) PATH="/usr/local/cuda/bin:$PATH" ;;
+	esac
+	export PATH
+fi

@@ -1,0 +1,17 @@
+# ~/.bashrc.d/60-wsl — WSL-only extras (managed by chezmoi)
+# Relies on IS_WSL exported by 30-platform (sourced earlier by name order).
+
+[ "$IS_WSL" = 1 ] || return 0
+
+# RTL-SDR: wideband FM to WSLg PulseAudio
+alias radio='rtl_fm -M wbfm -s 200k -r 48k - | PULSE_SERVER=unix:/mnt/wslg/PulseServer aplay -r 48000 -f S16_LE -t raw -c 1 -'
+
+# Fix RTL-SDR usb device permissions after usbipd attach (0bda = Realtek)
+alias rtlperm='sudo chmod 666 $(lsusb | grep 0bda | awk -F"[ :]" "{print \"/dev/bus/usb/\"\$2\"/\"\$4}" | head -1)'
+
+# Locally built libs (librtlsdr etc.)
+# NOTE: in the old .bashrc this export was accidentally glued onto a comment
+# line and never executed — it is live again now.
+if [ -d "$HOME/.local/lib" ]; then
+	export LD_LIBRARY_PATH="$HOME/.local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
