@@ -1,11 +1,12 @@
 # ~/.gitconfig — managed by chezmoi (template)
+# Shared settings live here; only diff/merge tool wiring is platform-specific.
+
 [user]
 	name = Marian Szabo
 	email = mrszb@yahoo.com
 
 [alias]
 	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-	# fixed: was quoted as 'reset HEAD --' which made git run the literal string
 	unstage = reset HEAD --
 	co = checkout
 	ci = commit
@@ -40,8 +41,65 @@
 	trustExitCode = false
 	keepBackup = false
 
-{{ if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
-# ---- WSL: Windows-side GUI tools via wslpath ----
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[core]
+	editor = code --wait
+{{- if eq .chezmoi.os "windows" }}
+	autocrlf = true
+{{- else }}
+	autocrlf = false
+{{- end }}
+
+[pull]
+	rebase = false
+
+[fetch]
+	prune = false
+
+[rebase]
+	autoStash = false
+
+[init]
+	defaultBranch = main
+
+[credential]
+{{- if eq .chezmoi.os "windows" }}
+	helper = manager
+{{- else }}
+	helper = store
+{{- end }}
+
+# ============================================================
+# Platform-specific diff/merge tools
+# ============================================================
+{{ if eq .chezmoi.os "windows" -}}
+# ---- Native Windows: direct .exe paths, no path translation ----
+[diff]
+	tool = p4merge
+
+[merge]
+	tool = p4merge
+
+[difftool "p4merge"]
+	path = C:/Program Files/Perforce/p4merge.exe
+
+[mergetool "p4merge"]
+	path = C:/Program Files/Perforce/p4merge.exe
+
+[difftool "BCompare"]
+	path = C:/Program Files/Beyond Compare 5/BComp.exe
+
+[mergetool "BCompare"]
+	path = C:/Program Files/Beyond Compare 5/BComp.exe
+	trustExitCode = true
+
+{{ else if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+# ---- WSL: Windows-side GUI tools reached through wslpath ----
 [diff]
 	tool = p4merge
 
@@ -63,8 +121,10 @@
 
 [safe]
 	directory = %(prefix)///wsl.localhost/WLinux/home/maros/proj-wsl/scanfiles
+
 {{ else -}}
-# ---- Native Linux: bcomp if installed (BCompare tool name works natively) ----
+# ---- Native Linux: meld as default (always present); BCompare on demand ----
+# NOTE: the Linux Beyond Compare RPM ships only `bcompare`, not `bcomp`.
 [diff]
 	tool = meld
 
@@ -77,28 +137,3 @@
 [mergetool "BCompare"]
 	cmd = bcompare "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
 {{ end -}}
-
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-
-[core]
-	editor = code --wait
-	autocrlf = false
-
-[pull]
-	rebase = false
-
-[fetch]
-	prune = false
-
-[rebase]
-	autoStash = false
-
-[init]
-	defaultBranch = main
-
-[credential]
-	helper = store
