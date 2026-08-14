@@ -13,7 +13,7 @@ if [[ "$(< /proc/sys/kernel/osrelease)" == *icrosoft* ]]; then
 	}
 else
 	VERACRYPT=veracrypt
-	BCOMP=bcomp
+	BCOMP=bcompare
 
 	diffui ()
 	{

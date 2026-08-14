@@ -72,10 +72,10 @@
 	tool = meld
 
 [difftool "BCompare"]
-	cmd = bcomp "$LOCAL" "$REMOTE"
+	cmd = bcompare "$LOCAL" "$REMOTE"
 
 [mergetool "BCompare"]
-	cmd = bcomp "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+	cmd = bcompare "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
 {{ end -}}
 
 [filter "lfs"]
