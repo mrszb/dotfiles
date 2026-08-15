@@ -3,13 +3,19 @@
 
 if [[ "$(< /proc/sys/kernel/osrelease)" == *icrosoft* ]]; then
 	export IS_WSL=1
-	VERACRYPT=$(wslpath 'C:\Program Files\VeraCrypt\VeraCrypt.exe')
-	BCOMP=$(wslpath 'C:\Program Files\Beyond Compare 5\bcomp.exe')
+	VERACRYPT='/mnt/c/Program Files/VeraCrypt/VeraCrypt.exe'
+	BCOMP='/mnt/c/Program Files/Beyond Compare 5/bcomp.exe'
 
-	# Beyond Compare diff with Windows path translation
+	# Beyond Compare, translating WSL paths to Windows paths
 	diffui ()
 	{
 		"$BCOMP" "$(wslpath -aw "$1")" "$(wslpath -aw "$2")"
+	}
+
+	# Wrapper so `bcompare` works on WSL too (Windows binary is bcomp.exe)
+	bcompare ()
+	{
+		"$BCOMP" "$@"
 	}
 else
 	VERACRYPT=veracrypt
@@ -17,12 +23,18 @@ else
 
 	diffui ()
 	{
-		"$BCOMP" "$1" "$2"
+		command "$BCOMP" "$1" "$2"
 	}
+	# No bcompare wrapper here: the Linux RPM already provides /usr/bin/bcompare.
 fi
 
-# NOTE: quotes must NOT be backslash-escaped here — the original
-#   alias vc=\"${VERACRYPT}\"
-# baked literal quote characters into the alias and broke it.
-alias vc="$VERACRYPT"
-alias bcompare="$BCOMP"
+# IMPORTANT: these must be FUNCTIONS, not aliases.
+# Alias expansion is textual, so
+#     alias vc="/mnt/c/Program Files/VeraCrypt/VeraCrypt.exe"
+# word-splits on the space and tries to run "/mnt/c/Program". It looks
+# correct when you inspect it with `alias vc`, but fails on execution.
+# A function keeps "$VERACRYPT" quoted as one word.
+vc ()
+{
+	"$VERACRYPT" "$@"
+}
