@@ -13,8 +13,8 @@ if [ -n "$_omp" ]; then
 	_omp_cfg=""
 	if [ -f "$HOME/.config/omp/cobalt2.omp.json" ]; then
 		_omp_cfg="$HOME/.config/omp/cobalt2.omp.json"
-	elif [ "$IS_WSL" = 1 ] && [ -f /mnt/c/Users/mszab/cobalt2.omp.json ]; then
-		_omp_cfg=/mnt/c/Users/mszab/cobalt2.omp.json
+        elif [ "$IS_WSL" = 1 ] && [ -f "$HOME/winhome/cobalt2.omp.json" ]; then
+		_omp_cfg="$HOME/winhome/cobalt2.omp.json"
 	fi
 	if [ -n "$_omp_cfg" ]; then
 		eval "$("$_omp" init bash --config "$_omp_cfg")"
