@@ -1,0 +1,52 @@
+# ~/.bashrc.d/80-cuda — CUDA host compiler pinning
+# CUDA lags Fedora's GCC; pick the newest g++ the toolkit accepts.
+
+[[ -x /usr/local/cuda/bin/nvcc ]] || return 0
+
+export CUDA_HOME=/usr/local/cuda
+[[ ":$PATH:" == *":$CUDA_HOME/bin:"* ]] || export PATH="$CUDA_HOME/bin:$PATH"
+
+_cuda_gcc_cap() {
+    local hc="$CUDA_HOME/targets/x86_64-linux/include/crt/host_config.h" cap
+    [[ -r $hc ]] || return 1
+    cap=$(grep -oPm1 'gcc versions later than \K[0-9]+' "$hc")
+    [[ -n $cap ]] || cap=$(grep -oPm1 '__GNUC__\s*>\s*\K[0-9]+' "$hc")
+    [[ -n $cap ]] || return 1
+    printf '%s\n' "$cap"
+}
+
+_cuda_host_cxx() {
+    local cap v def
+    cap=$(_cuda_gcc_cap) || { echo "cannot parse GCC cap from host_config.h" >&2; return 1; }
+    [[ $cap =~ ^[0-9]+$ ]] || return 1
+
+    # Default g++ already acceptable? Then nothing needs pinning.
+    def=$(g++ -dumpversion 2>/dev/null); def=${def%%.*}
+    if [[ $def =~ ^[0-9]+$ ]] && (( def <= cap )); then
+        command -v g++; return 0
+    fi
+
+    for (( v = cap; v >= 8; v-- )); do
+        [[ -x /usr/bin/g++-$v ]] && { printf '%s\n' "/usr/bin/g++-$v"; return 0; }
+    done
+    return 1
+}
+
+# Pin nvcc's host compiler for this shell (needed for BOTH configure and build).
+cuda-pin-gcc() {
+    local cxx
+    cxx=$(_cuda_host_cxx) || { echo "no compatible g++ found" >&2; return 1; }
+    export NVCC_PREPEND_FLAGS="-ccbin $cxx"
+    export CUDAHOSTCXX="$cxx"
+    echo "nvcc host compiler: $cxx (cap: $(_cuda_gcc_cap))"
+}
+
+# Configure a CUDA project. Pins the shell too, so `cmake --build` inherits it —
+# driver-API samples invoke nvcc from custom commands at build time and would
+# otherwise still pick up the system g++.
+cuda-cmake() {
+    cuda-pin-gcc || return 1
+    cmake -DCMAKE_CUDA_HOST_COMPILER="$CUDAHOSTCXX" \
+          -DCMAKE_C_COMPILER="${CUDAHOSTCXX/g++/gcc}" \
+          -DCMAKE_CXX_COMPILER="$CUDAHOSTCXX" "$@"
+}

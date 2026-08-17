@@ -35,12 +35,6 @@ ftext ()
 	grep -iIHrn --color=always "$1" . | less -r
 }
 
-# Copy with progress bar (rsync-based; the old strace hack was fragile)
-cpp ()
-{
-	rsync -ah --info=progress2 -- "$1" "$2"
-}
-
 # Current network information (iproute2, works on modern distros)
 netinfo ()
 {
@@ -71,11 +65,8 @@ findpi ()
 	sudo nmap -sP "${localip}/24" | awk '/^Nmap/{ip=$NF}/B8:27:EB|DC:A6:32|D8:3A:DD/{print ip}'
 }
 
-# Show the current distribution (via os-release, no init-script archaeology)
-distribution ()
-{
-	. /etc/os-release 2>/dev/null && echo "${ID:-unknown}" || echo unknown
-}
+# Show the current distribution (via os-release, no init-script archaeology):
+distribution () { ( . /etc/os-release 2>/dev/null && echo "${ID:-unknown}" ) || echo unknown; }
 
 # Show the current version of the operating system
 ver ()
