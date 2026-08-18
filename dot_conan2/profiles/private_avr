@@ -1,4 +1,5 @@
-{% set tc = os.getenv("HOME") + "/x-tools/avr-gcc-11.1.0-x64-linux" %}
+#{% set tc = os.getenv("HOME") + "/x-tools/avr-gcc-11.1.0-x64-linux" %}
+{% set tc = os.getenv("HOME") + "/x-tools/avr-gcc-15.2.0-x64-linux" %}
 {% set prefix = tc + "/bin/avr-" %}
 
 # Base profile for the avr-gcc 11.1.0 toolchain in ~/x-tools.
@@ -13,7 +14,7 @@
 os=baremetal
 arch=avr
 compiler=gcc
-compiler.version=11
+compiler.version=15
 compiler.cppstd=gnu17
 build_type=MinSizeRel
 
