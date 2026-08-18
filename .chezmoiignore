@@ -1,5 +1,4 @@
-# .chezmoiignore — per-platform exclusions (this file is itself a template)
-
+# .chezmoiignore — per-platform exclusions (always treated as a template)
 {{ if eq .chezmoi.os "windows" -}}
 # Native Windows has no bash — these would be written but never read.
 .bashrc
@@ -15,4 +14,8 @@ Documents
 {{   if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
 .bashrc.d/60-wsl
 {{   end -}}
+{{ end -}}
+
+{{ if or (eq .chezmoi.hostname "pinas") (eq .chezmoi.hostname "pi5") -}}
+.conan2/**
 {{ end -}}
