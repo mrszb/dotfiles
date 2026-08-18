@@ -1,8 +1,5 @@
 # ~/.bashrc.d/40-dev — dev tooling (managed by chezmoi)
 
-# uv: pin to system python3 (comment out to let uv manage its own pythons)
-export UV_PYTHON=$(command -v python3)
-
 # conan from its dedicated venv
 alias conan='~/.venvs/conan/bin/conan'
 
