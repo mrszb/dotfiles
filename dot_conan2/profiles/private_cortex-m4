@@ -1,0 +1,13 @@
+include(arm-none-eabi)
+
+# Cortex-M4 with hardware FP (STM32F3/F4, nRF52, SAM4S...).
+# For a soft-float M4 drop the -mfpu/-mfloat-abi flags.
+# Copy this file per MCU family rather than editing it in place.
+
+[settings]
+arch=armv7hf
+
+[conf]
+tools.build:cflags+=["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard", "-ffunction-sections", "-fdata-sections"]
+tools.build:cxxflags+=["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard", "-ffunction-sections", "-fdata-sections", "-fno-exceptions", "-fno-rtti", "-fno-threadsafe-statics"]
+tools.build:exelinkflags+=["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard", "--specs=nano.specs", "--specs=nosys.specs", "-Wl,--gc-sections"]

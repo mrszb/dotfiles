@@ -1,0 +1,10 @@
+include(avr)
+
+# ATmega328P at 16 MHz (Uno/Nano). Copy per MCU + crystal combination --
+# F_CPU is baked into avr-libc's delay routines at compile time, so a
+# profile is the right place for it.
+
+[conf]
+tools.build:cflags+=["-mmcu=atmega328p", "-DF_CPU=16000000UL", "-ffunction-sections", "-fdata-sections"]
+tools.build:cxxflags+=["-mmcu=atmega328p", "-DF_CPU=16000000UL", "-ffunction-sections", "-fdata-sections", "-fno-exceptions", "-fno-rtti", "-fno-threadsafe-statics"]
+tools.build:exelinkflags+=["-mmcu=atmega328p", "-Wl,--gc-sections"]

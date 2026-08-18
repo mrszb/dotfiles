@@ -1,0 +1,34 @@
+{% set tc = os.getenv("HOME") + "/x-tools/avr-gcc-11.1.0-x64-linux" %}
+{% set prefix = tc + "/bin/avr-" %}
+
+# Base profile for the avr-gcc 11.1.0 toolchain in ~/x-tools.
+# Do not use directly for a build -- it sets no -mmcu. Include it from a
+# per-target profile (see atmega328p) that adds the MCU flags.
+#
+# compiler.libcxx is deliberately unset: avr-libc ships no full libstdc++,
+# so declaring one would be a lie that leaks into every package ID.
+# MinSizeRel is the sane default when flash is measured in kilobytes.
+
+[settings]
+os=baremetal
+arch=avr
+compiler=gcc
+compiler.version=11
+compiler.cppstd=gnu17
+build_type=MinSizeRel
+
+[buildenv]
+CC={{ prefix }}gcc
+CXX={{ prefix }}g++
+AR={{ prefix }}gcc-ar
+AS={{ prefix }}as
+RANLIB={{ prefix }}gcc-ranlib
+STRIP={{ prefix }}strip
+OBJCOPY={{ prefix }}objcopy
+OBJDUMP={{ prefix }}objdump
+SIZE={{ prefix }}size
+
+[conf]
+tools.build:compiler_executables={"c": "{{ prefix }}gcc", "cpp": "{{ prefix }}g++", "asm": "{{ prefix }}gcc"}
+tools.cmake.cmaketoolchain:system_name=Generic
+tools.cmake.cmaketoolchain:system_processor=avr

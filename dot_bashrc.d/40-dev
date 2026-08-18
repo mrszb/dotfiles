@@ -1,8 +1,5 @@
 # ~/.bashrc.d/40-dev — dev tooling (managed by chezmoi)
 
-# conan from its dedicated venv
-alias conan='~/.venvs/conan/bin/conan'
-
 # cmake variants — only define the ones that exist on this box
 [ -x /snap/bin/cmake ]      && alias cmake-snap='/snap/bin/cmake'
 [ -x /usr/bin/cmake ]       && alias cmake-apt='/usr/bin/cmake'
