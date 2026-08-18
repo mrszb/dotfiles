@@ -19,3 +19,4 @@ Documents
 {{ if or (eq .chezmoi.hostname "pinas") (eq .chezmoi.hostname "pi5") -}}
 .conan2/**
 {{ end -}}
+README.md
