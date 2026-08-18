@@ -28,16 +28,22 @@ chezmoi init --apply mrszb
 
 ## Cross toolchains (~/x-tools, not managed by chezmoi)
 
-- `gcc-arm-none-eabi-10.3-2021.10` — official ARM Developer tarball
-  (GNU Arm Embedded Toolchain, last release before the "Arm GNU Toolchain" rename)
-- `avr-gcc-11.1.0-x64-linux` — Zak Kemble's builds, blog.zakkemble.net/avr-gcc-builds/
-  (avr-gcc 11.1.0, binutils 2.36.1, avr-libc SVN, gdb 10.2)
+- `arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi` — official Arm Developer
+  tarball (Arm GNU Toolchain, formerly "GNU Arm Embedded Toolchain")
+- `avr-gcc-15.2.0-x64-linux` — Zak Kemble's builds,
+  github.com/ZakKemble/avr-gcc-build
+  (avr-gcc 15.2.0, binutils 2.45, avr-libc 2.2.1, gdb 16.3)
 
 Both are x86_64 Linux prebuilts, relocatable, extracted into `~/x-tools`.
-Referenced by `dot_bashrc.d/40-dev` (PATH) and `dot_conan2/profiles/*` (compiler paths).
-Fastest way to replicate on another x86_64 box is to tar the directory across
-rather than re-download — the Conan profiles pin `compiler.version`, so a
-different build of the same version would silently fragment the package cache.
+Referenced by `dot_bashrc.d/40-dev` (PATH) and `dot_conan2/profiles/*`
+(compiler paths). Fastest way to replicate on another x86_64 box is to tar the
+directory across rather than re-download — the Conan profiles pin
+`compiler.version`, so a different build of the same version would silently
+fragment the package cache.
+
+`arm-none-eabi-gdb-py` links against `libpython3.8` (Arm still builds on Ubuntu
+20.04) and will not run on current Fedora. Plain `arm-none-eabi-gdb` is fine;
+use the distro `gdb` if Python scripting in the debugger is needed.
 
 Conan profiles are composed: `arm-none-eabi` and `avr` carry the toolchain,
 per-target profiles (`cortex-m4`, `atmega328p`) `include()` them and add MCU
@@ -59,15 +65,5 @@ tracked, since it is machine-specific.
   downloads) give the same version across all machines.
 - `conan` is installed per-machine with `uv tool install conan`; uv tools do not
   travel through chezmoi.
-  
-
-## Cross toolchains (~/x-tools, not managed by chezmoi)
-
-- `gcc-arm-none-eabi-10.3-2021.10` — official ARM Developer tarball
-  (GNU Arm Embedded Toolchain, last release before the "Arm GNU Toolchain" rename)
-- `avr-gcc-11.1.0-x64-linux` — Zak Kemble's builds, blog.zakkemble.net/avr-gcc-builds/
-  (avr-gcc 11.1.0, binutils 2.36.1, avr-libc SVN, gdb 10.2)
-
-Both are x86_64 Linux prebuilts, relocatable, extracted into ~/x-tools.
-Referenced by dot_bashrc.d/40-dev (PATH) and dot_conan2/profiles/* (compiler paths).
-
+- This `README.md` is listed in `.chezmoiignore` so it stays repo documentation
+  rather than being deployed to `$HOME`.
